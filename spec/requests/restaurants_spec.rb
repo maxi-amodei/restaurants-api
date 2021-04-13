@@ -8,9 +8,7 @@ RSpec.describe 'Restaurants requests' do
       expect(response.status).to eq(200)
     end
     it "returns the created restaurant" do
-      user = User.create!(email:"max@amodei", password:"123456")
-      Restaurant.create!(name:"Mcdonalds", address:"Blvrd streeet 1234", user: user)
-
+      create_restaurant("max@amodei", 123456, "Mcdonalds", "Blvrd streeet 1234")
       get('/api/v1/restaurants')
       
       array = JSON.parse(response.body)
@@ -22,18 +20,17 @@ RSpec.describe 'Restaurants requests' do
   describe " DELETE /api/v1/restaurants/:id" do
     context "the user has authentication token" do
       it "returns 204 when user is authorized" do
-        user = User.create!(email:"max@amodei", password:"123456")
-        restaurant = Restaurant.create!(name:"Mcdonalds", address:"Blvrd streeet 1234", user: user)
         
-        delete "/api/v1/restaurants/#{restaurant.id}",  headers: { 'X-User-Email': user.email, 'X-User-Token': user.authentication_token }
+        restaurant = create_restaurant("max@amodei", 123456, "Mcdonalds", "Blvrd streeet 1234")
+        
+        delete "/api/v1/restaurants/#{restaurant.id}",  headers: { 'X-User-Email': restaurant.user.email, 'X-User-Token': restaurant.user.authentication_token }
         
         expect(response.status).to eq(204)
       end
     end
-    context "does not have token" do
+    context "the user does not have authentication  token" do
       it "returns 401 when user is not authorized" do
-        user = User.create!(email:"max@amodei", password:"123456")
-        restaurant = Restaurant.create!(name:"Mcdonalds", address:"Blvrd streeet 1234", user: user)
+        restaurant = create_restaurant("max@amodei", 123456, "Mcdonalds", "Blvrd streeet 1234")
         
        delete "/api/v1/restaurants/#{restaurant.id}"
   
