@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe 'Status requests' do
+RSpec.describe 'Restaurants requests' do
   describe 'GET /api/v1/restaurants' do
     it 'returns a status message' do
       get('/api/v1/restaurants')
