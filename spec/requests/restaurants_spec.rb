@@ -30,7 +30,7 @@ RSpec.describe 'Restaurants requests' do
         expect(response.status).to eq(204)
       end
     end
-    context "the user has authentication token" do
+    context "does not have token" do
       it "returns 401 when user is not authorized" do
         user = User.create!(email:"max@amodei", password:"123456")
         restaurant = Restaurant.create!(name:"Mcdonalds", address:"Blvrd streeet 1234", user: user)
