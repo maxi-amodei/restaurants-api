@@ -28,7 +28,7 @@ RSpec.describe 'Restaurants requests' do
         expect(response.status).to eq(204)
       end
     end
-    context "the user does not have authentication  token" do
+    context "the user does not have authentication token" do
       it "returns 401 when user is not authorized" do
         restaurant = create_restaurant("max@amodei", 123456, "Mcdonalds", "Blvrd streeet 1234")
         
@@ -39,6 +39,34 @@ RSpec.describe 'Restaurants requests' do
     end
   end
 
+  describe "POST /api/v1/restaurants " do
+    context "authenticated user creates a new restaurant" do
+      it "returns 200" do
+        user = create_user("max@amodei", 123456)
+        post "/api/v1/restaurants", params: { "restaurant": { "name": "Mcdonalds", "address": "Blvrd strt" } }, headers: { 'X-User-Email': user.email, 'X-User-Token': user.authentication_token }
+        
+        expect(response.status).to eq(200)
+      end
+    end
+    context "Authenticated user but invalid restaurant params" do
+      it "returns 422" do
+        user = create_user("max@amodei", 123456)
+        post "/api/v1/restaurants", params: { "restaurant": { "name": "", "address": "" } }, headers: { 'X-User-Email': user.email, 'X-User-Token': user.authentication_token }
+        
+        expect(response.status).to eq(422)
+      end
+    end
+
+
+    context "Unauthenticated user creates restaurant" do
+      it "returns 401" do
+        user = create_user("max@amodei", 123456)
+        post "/api/v1/restaurants", params: { "restaurant": { "name": "Mcdonalds", "address": "Blvrd strt" } }, headers: { 'X-User-Email': "not_a_user@gmail.com", 'X-User-Token': "xhxhsdhshsnsn786" }
+        
+        expect(response.status).to eq(401)
+      end
+    end
+  end
 end
 
 
