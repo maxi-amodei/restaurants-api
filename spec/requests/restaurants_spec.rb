@@ -56,14 +56,24 @@ RSpec.describe 'Restaurants requests' do
         expect(response.status).to eq(422)
       end
     end
-
-
     context "Unauthenticated user creates restaurant" do
       it "returns 401" do
         user = create_user("max@amodei", 123456)
         post "/api/v1/restaurants", params: { "restaurant": { "name": "Mcdonalds", "address": "Blvrd strt" } }, headers: { 'X-User-Email': "not_a_user@gmail.com", 'X-User-Token': "xhxhsdhshsnsn786" }
         
         expect(response.status).to eq(401)
+      end
+    end
+  end
+
+  describe "PATCH /api/v1/restaurants/:id" do
+    context "Authenticated and params correct" do
+      it "returns 200" do
+        restaurant = create_restaurant("max@amodei", 123456, "Mcdonalds", "Blvrd streeet 1234")
+          
+          patch "/api/v1/restaurants/#{restaurant.id}", params: { "restaurant": { "name": "Mcdonald's", "address": "Blvrd strt" } },  headers: { 'X-User-Email': restaurant.user.email, 'X-User-Token': restaurant.user.authentication_token }
+        
+          expect(response.status).to eq(200)
       end
     end
   end
